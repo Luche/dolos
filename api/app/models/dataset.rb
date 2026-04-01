@@ -11,7 +11,7 @@
 #
 
 class Dataset < ApplicationRecord
-  MAX_ZIP_SIZE = 10.megabytes
+  MAX_ZIP_SIZE = 100.megabytes
 
   has_one_attached :zipfile
   has_many :reports, dependent: :destroy

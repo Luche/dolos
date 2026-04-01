@@ -12,6 +12,7 @@ export interface ExtraInfo {
   createdAt: Date;
   labels: string;
   ignored: string;
+  studentId?: string;
 }
 
 /**

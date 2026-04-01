@@ -218,11 +218,19 @@ export class FingerprintIndex {
     return new Pair(entry1, entry2);
   }
 
-  public allPairs(sortBy?: string): Array<Pair> {
+  public allPairs(
+    sortBy?: string,
+    groupKeyFn?: (file: TokenizedFile) => string | undefined
+  ): Array<Pair> {
     const pairs = [];
     const entries = Array.from(this.files.values());
     for (let i = 0; i < entries.length; i++) {
       for (let j = i + 1; j < entries.length; j++) {
+        if (groupKeyFn) {
+          const gI = groupKeyFn(entries[i].file);
+          const gJ = groupKeyFn(entries[j].file);
+          if (gI && gJ && gI === gJ) continue;
+        }
         pairs.push(new Pair(entries[i], entries[j]));
       }
     }

@@ -208,7 +208,15 @@ const onNodeClick = (file: File): void => {
   &-item {
     display: flex;
     gap: 0.5rem;
-    align-items: center;
+    align-items: flex-start;
+
+    span {
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+    }
   }
 }
 

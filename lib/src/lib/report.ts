@@ -36,7 +36,8 @@ export class Report {
 
   public allPairs(): Array<Pair> {
     if (this.pairs.length === 0) {
-      this.pairs = this.index.allPairs(this.options.sortBy);
+      const groupFn = (file: TokenizedFile) => file.file.extra?.studentId;
+      this.pairs = this.index.allPairs(this.options.sortBy, groupFn);
     }
     return this.pairs;
   }

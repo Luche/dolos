@@ -18,3 +18,9 @@ dolos-report-*/
 node_modules/
 vetur.config.js
 yarn-error.log
+
+# macOS
+.DS_Store
+
+# Test files
+OTHER_MEMORY.md
