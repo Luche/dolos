@@ -202,3 +202,9 @@ environment:
 **Upload fails with 413**: Increase `client_max_body_size` in nginx config. The API accepts up to 100MB zips.
 
 **Reports stuck in "queued"**: Check worker logs: `docker compose logs worker`. Ensure the CLI image exists locally.
+
+**308 redirect / "Not Found" after upload (HTTPS deployments)**: When using HTTPS, Rails' `force_ssl` middleware redirects internal HTTP requests and strips the `/dolos/api` prefix. Fix by adding `DOLOS_API_DISABLE_FORCE_SSL: "true"` to the `environment` section of both `api` and `worker` services in `docker-compose.yml`. This is safe — nginx still handles SSL termination. No image rebuild needed, just `docker compose down && docker compose up -d`.
+
+**API not reachable on expected port**: Set `API_INTERNAL_PORT=3000` explicitly in `.env`. Without it, the port defaults to `API_EXTERNAL_PORT` (e.g., 443), causing a mismatch with nginx's `proxy_pass http://127.0.0.1:3000/`. Verify with `curl http://127.0.0.1:3000/up` from the server.
+
+**nginx location order**: The `/dolos/api/` location block must come **before** `/dolos/` in your nginx config, otherwise API requests get routed to the web container instead.
