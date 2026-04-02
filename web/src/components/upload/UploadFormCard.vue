@@ -128,6 +128,7 @@ const languages = [
   }
 ];
 
+const onlyCorrect = shallowRef<boolean>(false);
 const accept = shallowRef<boolean>(false);
 const acceptRules = [
   (v: boolean) => v || "Please accept the conditions if you want to continue.",
@@ -158,6 +159,7 @@ const clearForm = (): void => {
   file.value = undefined;
   name.value = "";
   language.value = null;
+  onlyCorrect.value = false;
 };
 
 // Cancel the analysis.
@@ -189,7 +191,7 @@ const onSubmit = async (): Promise<void> => {
 
     // Upload the file.
     try {
-      const report = await reports.uploadReport(name.value ?? file.value!.name, file.value!, language.value ?? "");
+      const report = await reports.uploadReport(name.value ?? file.value!.name, file.value!, language.value ?? "", onlyCorrect.value);
 
       // Set the report as active.
       reportActiveId.value = report.id;
@@ -286,6 +288,15 @@ watch(
               item-title="name"
               item-value="value"
               variant="outlined"
+              density="compact"
+              hide-details
+            />
+
+            <v-checkbox
+              class="mt-2"
+              v-model="onlyCorrect"
+              label="Only consider correct answer"
+              color="primary"
               density="compact"
               hide-details
             />

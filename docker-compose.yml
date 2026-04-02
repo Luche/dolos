@@ -19,9 +19,9 @@ services:
 
   web:
     image: ghcr.io/dodona-edu/dolos-web
-    #build:
-    #  dockerfile: ./Dockerfile.web
-    #  context: .
+    build:
+     dockerfile: ./Dockerfile.web
+     context: .
     ports:
       # This renders to "host:port:8080", so traffic from the provided hosts on the specified
       # port is available to port 8080 inside the container. By default, this will be
@@ -43,7 +43,7 @@ services:
 
   api:
     image: ghcr.io/dodona-edu/dolos-api
-    # build: ./api/
+    build: ./api/
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -p 3000 -b '0.0.0.0'"
     volumes:
       - dolos-api-storage:/dolos/storage
@@ -78,7 +78,7 @@ services:
 
   worker:
     image: ghcr.io/dodona-edu/dolos-api
-    # build: ./api/
+    build: ./api/
     command: bash -c "bundle exec rails jobs:work"
     volumes:
       - dolos-api-storage:/dolos/storage

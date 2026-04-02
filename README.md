@@ -2,6 +2,10 @@
 
 Guide to deploy the customized Dolos (based on the LMS (class zip -> student folder -> code zip -> code), TheoryExam (class zip -> student's code zip -> code), and OJ Bulk Download file structures (class zip -> student folder -> problem folder -> code)) on a server with existing nginx and MySQL, making it accessible over the network.
 
+## Custom Features
+
+- **"Only consider correct answer" checkbox**: When enabled during upload, the system filters files per problem subfolder inside each student folder. If any file in a subfolder has "correct" (case-insensitive) in its filename, only those files are considered for similarity analysis. If no file matches, all files in that subfolder are included as usual.
+
 ## Prerequisites
 
 - Docker and Docker Compose installed on the server
@@ -69,12 +73,16 @@ DOCKER_SOCKET=/var/run/docker.sock
 
 If using HTTPS, set `WEB_PROTOCOL=https` and `*_EXTERNAL_PORT=443`.
 
-## Step 2: Build the CLI Image
+## Step 2: Build All Docker Images
 
-The worker spawns CLI containers to analyze uploads. Build from local source to include our fixes:
+All three images must be built from local source to include the custom features. The `docker-compose.yml` already has `build` directives enabled for `web`, `api`, and `worker`.
 
 ```bash
+# Build the CLI image (worker spawns this to analyze uploads)
 docker build -f Dockerfile.cli -t ghcr.io/dodona-edu/dolos-cli:latest .
+
+# Build the web, api, and worker images
+docker compose build
 ```
 
 ## Step 3: Start Services
@@ -83,7 +91,7 @@ docker build -f Dockerfile.cli -t ghcr.io/dodona-edu/dolos-cli:latest .
 docker compose up -d
 ```
 
-This starts: `db` (MariaDB), `api` (Rails), `web` (Vue frontend), `worker` (background jobs).
+This starts: `db` (MariaDB), `api` (Rails + runs migrations automatically), `web` (Vue frontend), `worker` (background jobs).
 
 Verify all services are healthy:
 

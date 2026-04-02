@@ -84,12 +84,40 @@ export class Dataset {
     return result;
   }
 
+  private static filterCorrectFiles(allFiles: string[]): string[] {
+    const groups = new Map<string, string[]>();
+    for (const filePath of allFiles) {
+      const parentDir = path.dirname(filePath);
+      if (!groups.has(parentDir)) {
+        groups.set(parentDir, []);
+      }
+      groups.get(parentDir)!.push(filePath);
+    }
+
+    const result: string[] = [];
+    for (const [, filesInDir] of groups) {
+      const correctFiles = filesInDir.filter(f =>
+        path.basename(f).toLowerCase().includes("correct")
+      );
+      if (correctFiles.length > 0) {
+        result.push(...correctFiles);
+      } else {
+        result.push(...filesInDir);
+      }
+    }
+    return result;
+  }
+
   private static async collectStudentFiles(
     dirPath: string,
     studentId: string,
-    fullName?: string
+    fullName?: string,
+    onlyCorrect?: boolean
   ): Promise<File[]> {
-    const allFiles = await this.walkDir(dirPath);
+    let allFiles = await this.walkDir(dirPath);
+    if (onlyCorrect) {
+      allFiles = this.filterCorrectFiles(allFiles);
+    }
     const files: File[] = [];
     const displayName = fullName || studentId;
 
@@ -128,7 +156,8 @@ export class Dataset {
 
   private static async fromMultipleZips(
     zipPaths: string[],
-    ignore?: string
+    ignore?: string,
+    onlyCorrect?: boolean
   ): Promise<Dataset> {
     const allFiles: File[] = [];
     const tmpDirs: string[] = [];
@@ -155,7 +184,9 @@ export class Dataset {
               const studentId = sd.name;
               const studentFiles = await this.collectStudentFiles(
                 path.join(tmpDir, sd.name),
-                studentId
+                studentId,
+                undefined,
+                onlyCorrect
               );
               allFiles.push(...studentFiles);
             }
@@ -170,7 +201,9 @@ export class Dataset {
               const studentId = sd.name.split("_")[0] || sd.name;
               const studentFiles = await this.collectStudentFiles(
                 path.join(tmpDir, sd.name),
-                studentId
+                studentId,
+                undefined,
+                onlyCorrect
               );
               allFiles.push(...studentFiles);
             }
@@ -219,7 +252,8 @@ export class Dataset {
 
   private static async fromZIP(
     zipPath: string,
-    ignore?: string
+    ignore?: string,
+    onlyCorrect?: boolean
   ): Promise<Dataset> {
     const tmpDir = await fs.mkdtemp(path.join(tmpdir(), "dolos-unzip-"));
     try {
@@ -238,7 +272,7 @@ export class Dataset {
         }
       } else {
         // Detect structure and extract student submissions
-        const files = await this.extractStudentSubmissions(tmpDir);
+        const files = await this.extractStudentSubmissions(tmpDir, onlyCorrect);
         if (files.length < 2) {
           // Fallback: read all code files from directory
           const allFiles = await this.collectCodeFiles(tmpDir);
@@ -280,10 +314,10 @@ export class Dataset {
    *
    * Automatically unwraps a single wrapper directory and skips __MACOSX.
    */
-  private static async extractStudentSubmissions(dirPath: string): Promise<File[]> {
+  private static async extractStudentSubmissions(dirPath: string, onlyCorrect?: boolean): Promise<File[]> {
     // Unwrap single wrapper directory (e.g., class.zip → ClassName/ → students...)
     const dirToProcess = await this.unwrapSingleDir(dirPath);
-    return this.processStudentEntries(dirToProcess);
+    return this.processStudentEntries(dirToProcess, onlyCorrect);
   }
 
   /**
@@ -303,7 +337,7 @@ export class Dataset {
     return dirPath;
   }
 
-  private static async processStudentEntries(dirPath: string): Promise<File[]> {
+  private static async processStudentEntries(dirPath: string, onlyCorrect?: boolean): Promise<File[]> {
     const entries = await fs.readdir(dirPath, { withFileTypes: true });
     const allFiles: File[] = [];
 
@@ -324,7 +358,7 @@ export class Dataset {
           continue;
         }
         await this.extractRecursive(studentDir);
-        const studentFiles = await this.collectStudentFiles(studentDir, studentId);
+        const studentFiles = await this.collectStudentFiles(studentDir, studentId, undefined, onlyCorrect);
         allFiles.push(...studentFiles);
 
       } else if (entry.isDirectory()) {
@@ -353,7 +387,7 @@ export class Dataset {
         }
 
         await this.extractRecursive(fullPath);
-        const studentFiles = await this.collectStudentFiles(fullPath, studentId, fullName);
+        const studentFiles = await this.collectStudentFiles(fullPath, studentId, fullName, onlyCorrect);
         allFiles.push(...studentFiles);
       }
     }
@@ -418,18 +452,18 @@ export class Dataset {
   }
 
 
-  public static async create(paths: string[], ignore?: string): Promise<Dataset> {
+  public static async create(paths: string[], ignore?: string, onlyCorrect?: boolean): Promise<Dataset> {
     if (paths.length == 1) {
       const inputFile = paths[0];
       if (inputFile.toLowerCase().endsWith(".zip")) {
-        return Dataset.fromZIP(inputFile, ignore);
+        return Dataset.fromZIP(inputFile, ignore, onlyCorrect);
       } else if (inputFile.toLowerCase().endsWith(".csv")) {
         return Dataset.fromCSV(inputFile, ignore);
       } else {
         throw new Error("You gave one input file, but it is not a CSV file or a ZIP archive.");
       }
     } else if (paths.every(p => p.toLowerCase().endsWith(".zip"))) {
-      return Dataset.fromMultipleZips(paths, ignore);
+      return Dataset.fromMultipleZips(paths, ignore, onlyCorrect);
     } else {
       const resolvedFiles = (await readFiles(paths)).ok();
       const resolvedIgnoredFile = await this.setIgnoredFile(resolvedFiles, ignore);

@@ -20,8 +20,8 @@ export class Dolos {
     this.options = new Options(customOptions);
   }
 
-  public async analyzePaths(paths: string[], ignore?: string): Promise<Report> {
-    const dataset = await Dataset.create(paths, ignore);
+  public async analyzePaths(paths: string[], ignore?: string, onlyCorrect?: boolean): Promise<Report> {
+    const dataset = await Dataset.create(paths, ignore, onlyCorrect);
     return this.analyze(dataset.files, dataset.name, dataset.ignore);
   }
 

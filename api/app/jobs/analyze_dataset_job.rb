@@ -51,6 +51,7 @@ class AnalyzeDatasetJob < ApplicationJob
       '/input.zip'
     ]
     cmd += ['-l', @dataset.programming_language] if @dataset.programming_language.present?
+    cmd += ['--only-correct'] if @dataset.only_correct
     docker_options = {
       Cmd: cmd,
       User: Process.euid.to_s,

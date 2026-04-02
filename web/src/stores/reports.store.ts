@@ -57,11 +57,12 @@ export const useReportsStore = defineStore("reports", () => {
   }
 
   // Upload a new report
-  async function uploadReport(name: string, file: File, language?: string): Promise<Report> {
+  async function uploadReport(name: string, file: File, language?: string, onlyCorrect?: boolean): Promise<Report> {
     const data = new FormData();
     data.append("dataset[zipfile]", file);
     data.append("dataset[name]", name);
     data.append("dataset[programming_language]", language ?? "");
+    data.append("dataset[only_correct]", onlyCorrect ? "true" : "false");
 
     const response = await axios.post(
       `${import.meta.env.VITE_API_URL}/reports`,

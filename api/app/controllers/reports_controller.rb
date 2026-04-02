@@ -37,6 +37,6 @@ class ReportsController < ApplicationController
   end
 
   def dataset_params
-    params.expect(dataset: %i[zipfile name programming_language])
+    params.expect(dataset: %i[zipfile name programming_language only_correct])
   end
 end

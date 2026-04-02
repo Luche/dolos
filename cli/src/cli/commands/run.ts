@@ -172,6 +172,13 @@ export function runCommand(program: Command): Command {
         "Include the comments during the tokenization process."
       )
     )
+    .option(
+      "--only-correct",
+      Utils.indent(
+        "Only consider files with 'correct' in the filename per problem subfolder. " +
+        "If no file matches in a subfolder, all files are included."
+      )
+    )
     .action(async (locations, options) => run(locations, { ...options , ...program.opts() }));
 }
 
@@ -185,6 +192,7 @@ interface RunOptions extends Options {
   outputFormat: string;
   outputDestination: string;
   ignore: string;
+  onlyCorrect: boolean;
 }
 
 export async function run(locations: string[], options: RunOptions): Promise<void> {
@@ -214,7 +222,7 @@ export async function run(locations: string[], options: RunOptions): Promise<voi
       fragmentSortBy: options.fragmentSortBy,
       includeComments: options.includeComments
     });
-    const report = await dolos.analyzePaths(locations, options.ignore);
+    const report = await dolos.analyzePaths(locations, options.ignore, options.onlyCorrect);
 
     if (report.warnings.length > 0) {
       report.warnings.forEach(warn => warning(warn));
