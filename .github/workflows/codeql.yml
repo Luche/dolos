@@ -16,6 +16,10 @@ on:
     branches: [ main ]
   schedule:
     - cron: '33 8 * * *'
+    
+permissions:
+  security-events: write
+  contents: read
 
 jobs:
   analyze:

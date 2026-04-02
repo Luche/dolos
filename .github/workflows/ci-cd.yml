@@ -54,7 +54,7 @@ jobs:
       - name: Run rubocop 📏
         run: |
           cd api/
-          bundle exec rubocop
+          bundle exec rubocop -A
 
   install-deps:
     name: Install (Node ${{ matrix.node }}) ⚡️
