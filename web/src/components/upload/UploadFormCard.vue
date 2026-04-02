@@ -295,7 +295,7 @@ watch(
             <v-checkbox
               class="mt-2"
               v-model="onlyCorrect"
-              label="Only consider correct answer"
+              label="Only consider correct answer if there is one, consider all files if no correct answer (OJ exclusive feature)"
               color="primary"
               density="compact"
               hide-details
