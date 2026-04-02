@@ -6,6 +6,21 @@ Guide to deploy the customized Dolos (based on the LMS (class zip -> student fol
 
 - **"Only consider correct answer" checkbox**: When enabled during upload, the system filters files per problem subfolder inside each student folder. If any file in a subfolder has "correct" (case-insensitive) in its filename, only those files are considered for similarity analysis. If no file matches, all files in that subfolder are included as usual.
 
+## Step 0: Clone the Repository
+
+This repo uses git submodules for tree-sitter parsers. Clone recursively:
+
+```bash
+git clone --recursive https://github.com/Luche/dolos.git
+cd dolos
+```
+
+If you already cloned without `--recursive`, initialize submodules manually:
+
+```bash
+git submodule update --init --recursive
+```
+
 ## Prerequisites
 
 - Docker and Docker Compose installed on the server
