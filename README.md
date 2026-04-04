@@ -121,7 +121,7 @@ Add to your nginx server block (e.g., `/etc/nginx/sites-available/default`):
 ```nginx
 # Dolos API
 location /dolos/api/ {
-    proxy_pass http://127.0.0.1:3000/;
+    proxy_pass http://127.0.0.1:3000;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -133,7 +133,7 @@ location /dolos/api/ {
 
 # Dolos Web UI
 location /dolos/ {
-    proxy_pass http://127.0.0.1:8080/;
+    proxy_pass http://127.0.0.1:8080;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
