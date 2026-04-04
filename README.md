@@ -119,15 +119,6 @@ docker compose ps
 Add to your nginx server block (e.g., `/etc/nginx/sites-available/default`):
 
 ```nginx
-# Dolos Web UI
-location /dolos/ {
-    proxy_pass http://127.0.0.1:8080/;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-}
-
 # Dolos API
 location /dolos/api/ {
     proxy_pass http://127.0.0.1:3000/;
@@ -138,6 +129,15 @@ location /dolos/api/ {
 
     # Allow large zip uploads
     client_max_body_size 100M;
+}
+
+# Dolos Web UI
+location /dolos/ {
+    proxy_pass http://127.0.0.1:8080/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
 }
 ```
 
@@ -206,5 +206,3 @@ environment:
 **308 redirect / "Not Found" after upload (HTTPS deployments)**: When using HTTPS, Rails' `force_ssl` middleware redirects internal HTTP requests and strips the `/dolos/api` prefix. Fix by adding `DOLOS_API_DISABLE_FORCE_SSL: "true"` to the `environment` section of both `api` and `worker` services in `docker-compose.yml`. This is safe — nginx still handles SSL termination. No image rebuild needed, just `docker compose down && docker compose up -d`.
 
 **API not reachable on expected port**: Set `API_INTERNAL_PORT=3000` explicitly in `.env`. Without it, the port defaults to `API_EXTERNAL_PORT` (e.g., 443), causing a mismatch with nginx's `proxy_pass http://127.0.0.1:3000/`. Verify with `curl http://127.0.0.1:3000/up` from the server.
-
-**nginx location order**: The `/dolos/api/` location block must come **before** `/dolos/` in your nginx config, otherwise API requests get routed to the web container instead.
