@@ -3,6 +3,10 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
 
   config.dolos_api_url = URI.parse(ENV.fetch('DOLOS_API_URL') { 'https://dolos.ugent.be/api' })
+
+  # When SSL is terminated at the reverse proxy, make Rails treat all requests as HTTPS
+  # so Active Storage and other URL helpers generate https:// URLs.
+  config.assume_ssl = config.dolos_api_url.scheme == 'https'
   config.front_end_base_url = ENV.fetch('DOLOS_API_FRONT_END_URL') { 'https://dolos.ugent.be/server' }
 
   config.hosts = ENV.fetch('DOLOS_API_HOSTS') { config.dolos_api_url.host }
