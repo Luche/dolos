@@ -97,7 +97,7 @@ GEM
     base64 (0.3.0)
     bcrypt_pbkdf (1.1.2)
     bigdecimal (4.1.0)
-    bootsnap (1.23.0)
+    bootsnap (1.24.3)
       msgpack (~> 1.2)
     builder (3.3.0)
     capistrano (3.20.0)
@@ -150,7 +150,7 @@ GEM
     factory_bot_rails (6.5.1)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
-    faker (3.6.1)
+    faker (3.8.0)
       i18n (>= 1.8.11, < 2)
     globalid (1.3.0)
       activesupport (>= 6.1)
@@ -224,7 +224,7 @@ GEM
       date
       stringio
     public_suffix (7.0.5)
-    puma (7.2.0)
+    puma (8.0.1)
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.2.5)
@@ -304,7 +304,7 @@ GEM
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
-    rubyzip (3.2.2)
+    rubyzip (3.3.0)
     securerandom (0.4.1)
     sentry-rails (6.5.0)
       railties (>= 5.2.0)
@@ -359,15 +359,15 @@ DEPENDENCIES
   docker-api (~> 2.4.0)
   ed25519
   factory_bot_rails (~> 6.5.1)
-  faker (~> 3.6.1)
+  faker (~> 3.8.0)
   mocha (~> 3.1.0)
   mysql2 (~> 0.5)
-  puma (~> 7.2)
+  puma (~> 8.0)
   rack-cors
   rails (~> 8.1.3)
   rubocop-minitest (~> 0.39.1)
   rubocop-rails (~> 2.34)
-  rubyzip (~> 3.2.2)
+  rubyzip (~> 3.3.0)
   sentry-rails
   sentry-ruby
   stackprof
